@@ -9,7 +9,7 @@ class BarChart extends Component {
     constructor(props) {
         super(props);
         this.server = process.env.REACT_APP_SERVER_ADDRESS ? process.env.REACT_APP_SERVER_ADDRESS : window.location.host;
-        this.protocol = process.env.REACT_APP_SERVER_PROTOCOL ? process.env.REACT_APP_SERVER_PROTOCOL : 'http';
+        this.protocol = process.env.REACT_APP_SERVER_PROTOCOL ? process.env.REACT_APP_SERVER_PROTOCOL : 'https';
     }
 
     getApiUrl(name) {
@@ -21,21 +21,18 @@ class BarChart extends Component {
         return false;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         console.log('componentDidMount start');
         console.log(ReactDOM.findDOMNode(this));
         console.log(document.getElementById("#bar-chart-root"));
-        this.drawChart();
+        await this.drawChart();
         console.log('componentDidMount end');
     }
 
-    drawChart() {
-        //const url = this.getApiUrl('data');
-        //const response = await fetch(url);
-        //const data = await response.json();
-        const data = [ [ 1, 1, '01/01' ],
-                       [ 2, 3, '01/02' ],
-                       [ 3, 4, '01/03' ] ];
+    async drawChart() {
+        const url = this.getApiUrl('data');
+        const response = await fetch(url);
+        const data = await response.json();
         const totals = data.map(x => x[0] + x[1]);
         console.log(data);
         console.log(totals);
