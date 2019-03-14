@@ -34,11 +34,12 @@ class BarChart extends Component {
         const response = await fetch(url);
         const data = await response.json();
         const totals = data.map(x => x[0] + x[1]);
+        const clusters = 25;
         console.log(data);
         console.log(totals);
 
         const y = d3.scaleLinear()
-        .domain([ 0, Math.max(...totals) ])
+        .domain([ 0, clusters])
         .range([ 0, 210 ]);
 
         const chartBottom = this.props.height - 70;
@@ -48,7 +49,7 @@ class BarChart extends Component {
         const x2 = d3.scaleTime().range([ chartLeft + 40, (data.length - 1) * 70 + chartLeft + 40 ]);
         const y2 = d3.scaleLinear().range([ 210, 0 ]);
         x2.domain(d3.extent(data, function(d) { return parseTime(d[2]); }));
-        y2.domain([ 0, Math.max(...totals) ]);
+        y2.domain([ 0, clusters])
         y2.nice(5);
 
         console.log("#" + this.props.id);
@@ -88,18 +89,20 @@ class BarChart extends Component {
         .on('mousemove', handleMouseOver)
         .on('mouseout', handleMouseOut);
 
+        // Green
         columns.append('rect')
         .attr('x', (d, i) => i * 70 + chartLeft + 25)
-        .attr('y', (d) => chartBottom - y(d[0]))
+        .attr('y', (d) => chartBottom - y(clusters * d[0] / (d[0] + d[1])))
         .attr('width', 30)
-        .attr('height', (d) => y(d[0]))
+        .attr('height', (d) => y(clusters * d[0] / (d[0] + d[1])))
         .attr('fill', '#d9534f');
 
+        // Red
         columns.append('rect')
         .attr('x', (d, i) => i * 70 + chartLeft + 25)
-        .attr('y', (d) => chartBottom - y(d[1]) - y(d[0]))
+        .attr('y', (d) => chartBottom - y(clusters))
         .attr('width', 30)
-        .attr('height', (d) => y(d[1]) - 1)
+        .attr('height', (d) => y(clusters - clusters * d[0] / (d[0] + d[1])) - 1)
         .attr('fill', '#5cb85c');
 
         // Add the x Axis
